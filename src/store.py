@@ -1,8 +1,5 @@
 """
-
-
-
-
+Custom exceptions and function to load JSON info into our data model
 """
 
 import json
@@ -15,7 +12,7 @@ class RestockItemError(Exception):
     Base exception for all errors in this mod
     """
 
-class ManifestFileNotFound(RestockItemError):
+class ManifestFileNotFoundError(RestockItemError):
     """
     Exception raised when the manifest file doesn't exist on disk
     """
@@ -31,7 +28,7 @@ def load_manifest(path) -> tuple[list[RestockItem], list[dict]]:
     try:
         raw_text = resolved_path.read_text(encoding="utf-8")
     except FileNotFoundError as e:
-        raise ManifestFileNotFound(f"No restock items found at {resolved_path}") from e
+        raise ManifestFileNotFoundError(f"No restock items found at {resolved_path}") from e
 
     # load info
     try:
@@ -47,6 +44,7 @@ def load_manifest(path) -> tuple[list[RestockItem], list[dict]]:
         try:
             valid_items.append(RestockItem.model_validate(row))
         except ValidationError as e:
-            invalid_items.append(row)
+            error_msg = [f"{e['loc']} : {e['msg']}" for e in e.errors()]
+            invalid_items.append({"row" : row, "errors" : error_msg})
 
     return valid_items, invalid_items

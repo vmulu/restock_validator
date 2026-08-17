@@ -1,17 +1,15 @@
 """
-
-
-
+Defining our data model RestockItem using pydantic
 """
 
-from typing import Literal, Optional
+from typing import Literal
 from pydantic import BaseModel, Field
 
 Category = Literal["electronics", "perishable", "apparel", "hardware"]
 
 class RestockItem(BaseModel):
     """
-    Docstring for RestockItem
+    Blueprint for RestockItem objects
     """
 
     sku : str
