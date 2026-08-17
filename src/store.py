@@ -17,12 +17,15 @@ class ManifestFileNotFoundError(RestockItemError):
     Exception raised when the manifest file doesn't exist on disk
     """
 
-def load_manifest(path) -> tuple[list[RestockItem], list[dict]]:
+def load_manifest(path : str | None = None) -> tuple[list[RestockItem], list[dict]]:
     """
     Loads items from JSON file
     """
 
-    resolved_path = Path(path).parent / "data" / "restock_manifest.json"
+    if path is None:
+        resolved_path = Path(__file__).parent.parent / "data" / "restock_manifest.json"
+    else:
+        resolved_path = Path(path)
 
     # try reading
     try:

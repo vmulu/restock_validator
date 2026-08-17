@@ -54,11 +54,20 @@ def test_invalid_fields(field, value):
     # we expect to see a error
     with pytest.raises(ValidationError) : RestockItem.model_validate(test_data)
 
-def test_load_json_file():
+def test_load_manifest_with_path():
     """
     Testing if we get valid and invalid items correctly
     """
-    test_valid_items, test_invalid_items = load_manifest("data")
+    test_valid_items, test_invalid_items = load_manifest("data/restock_manifest.json")
+
+    assert len(test_valid_items) == 8
+    assert len(test_invalid_items) == 4
+
+def test_load_manifest_with_no_path():
+    """
+    Testing load_manifest works with no path and goes to default
+    """
+    test_valid_items, test_invalid_items = load_manifest()
 
     assert len(test_valid_items) == 8
     assert len(test_invalid_items) == 4
@@ -71,7 +80,7 @@ def test_restock_item_error(tmp_path):
     bad_path = tmp_path / "restock_manifest.json"
     bad_path.write_text("{ bad data", encoding="utf-8")
 
-    with pytest.raises(RestockItemError) : load_manifest(tmp_path)
+    with pytest.raises(RestockItemError) : load_manifest(bad_path)
 
 def test_manifest_file_not_found():
     """
